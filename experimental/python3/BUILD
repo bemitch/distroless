@@ -18,18 +18,18 @@ DISTRO_DEBS = {
     "_debian10": [
         "libffi6",
         "libncursesw6",
-        "libpython3.7-minimal",
-        "libpython3.7-stdlib",
+        "libpython3.9-minimal",
+        "libpython3.9-stdlib",
         "libtinfo6",
         "libuuid1",
         "python3-distutils",
-        "python3.7-minimal",
+        "python3.9-minimal",
     ],
 }
 
 DISTRO_VERSION = {
     "_debian9": "3.5",
-    "_debian10": "3.7",
+    "_debian10": "3.9",
 }
 
 [
