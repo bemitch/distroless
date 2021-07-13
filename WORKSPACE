@@ -309,6 +309,19 @@ load(
     container_repositories = "repositories",
 )
 
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
+
+container_pull(
+    name = "debian10",
+    registry = "dockerhub",
+    repository = "debian",
+    tag = "latest"
+)
+
+
 container_repositories()
 
 load(

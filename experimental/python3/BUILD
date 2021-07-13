@@ -5,6 +5,7 @@ load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_docker//contrib:test.bzl", "container_test")
 load("//:checksums.bzl", ARCHITECTURES = "BASE_ARCHITECTURES")
 load("//base:base.bzl", "NONROOT")
+load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_extract")
 
 # distribution-specific deb dependencies
 DISTRO_DEBS = {
@@ -32,12 +33,22 @@ DISTRO_VERSION = {
     "_debian10": "3.7",
 }
 
+container_run_and_extract(
+    name = "build_python3.9",
+    commands = ["touch test.txt"],
+    extract_file = "/test.txt",
+    image = "@debian10//image"
+)
+
 [
     container_image(
         name = ("python3" if (not mode) else mode[1:]) + "_root_" + arch + distro_suffix,
         architecture = arch,
         # Based on //cc so that C extensions work properly.
         base = "//cc" + (mode if mode else ":cc") + "_root_" + arch + distro_suffix,
+        files = [
+            "mytestfile.txt"
+        ],
         debs = [
             DISTRO_PACKAGES[arch][distro_suffix]["dash"],
             DISTRO_PACKAGES[arch][distro_suffix]["libbz2-1.0"],
