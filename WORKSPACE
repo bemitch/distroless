@@ -315,8 +315,8 @@ load(
 )
 
 container_pull(
-    name = "debian10",
-    registry = "dockerhub",
+    name = "bmdebian10",
+    registry = "index.docker.io",
     repository = "debian",
     tag = "latest"
 )

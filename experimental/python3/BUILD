@@ -6,6 +6,7 @@ load("@io_bazel_rules_docker//contrib:test.bzl", "container_test")
 load("//:checksums.bzl", ARCHITECTURES = "BASE_ARCHITECTURES")
 load("//base:base.bzl", "NONROOT")
 load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_extract")
+load("@io_bazel_rules_docker//docker/package_managers:download_pkgs.bzl", "download_pkgs")
 
 # distribution-specific deb dependencies
 DISTRO_DEBS = {
@@ -34,10 +35,19 @@ DISTRO_VERSION = {
 }
 
 container_run_and_extract(
-    name = "build_python3.9",
+    name = "build_python",
+    # image = "//base:static_debug_root_amd64_debian10.tar",
+    image = "@bmdebian10//image",
     commands = ["touch test.txt"],
-    extract_file = "/test.txt",
-    image = "@debian10//image"
+    extract_file = "/test.txt"
+)
+
+container_image(
+    name = "bmtestimage",
+    base = "@bmdebian10//image",
+    files = [
+        "build_python/test.txt"
+    ]
 )
 
 [
@@ -47,7 +57,8 @@ container_run_and_extract(
         # Based on //cc so that C extensions work properly.
         base = "//cc" + (mode if mode else ":cc") + "_root_" + arch + distro_suffix,
         files = [
-            "mytestfile.txt"
+            "mytestfile.txt",
+            "build_python/test.txt"
         ],
         debs = [
             DISTRO_PACKAGES[arch][distro_suffix]["dash"],
