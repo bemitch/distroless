@@ -7,6 +7,8 @@ load("//:checksums.bzl", ARCHITECTURES = "BASE_ARCHITECTURES")
 load("//base:base.bzl", "NONROOT")
 load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_extract")
 load("@io_bazel_rules_docker//docker/package_managers:download_pkgs.bzl", "download_pkgs")
+load("@io_bazel_rules_docker//docker/package_managers:install_pkgs.bzl", "install_pkgs")
+
 
 # distribution-specific deb dependencies
 DISTRO_DEBS = {
@@ -50,6 +52,25 @@ container_image(
     ]
 )
 
+download_pkgs(
+    name = "python3.9_package",
+    image_tar = "//experimental/python3:bmtestimage.tar",
+    packages = [
+        "python3.9"
+    ],
+    additional_repos = [
+        "# deb http://snapshot.debian.org/archive/debian/20210621T000000Z sid main",
+        "deb http://deb.debian.org/debian sid main"
+    ]
+)
+
+install_pkgs(
+    name = "build_python3.9",
+    image_tar = "//cc:cc_root_amd64_debian10.tar",
+    installables_tar = "//experimental/python3:python3.9_package.tar",
+    output_image_name = "python3.9_distroless"
+)
+
 [
     container_image(
         name = ("python3" if (not mode) else mode[1:]) + "_root_" + arch + distro_suffix,
@@ -57,8 +78,7 @@ container_image(
         # Based on //cc so that C extensions work properly.
         base = "//cc" + (mode if mode else ":cc") + "_root_" + arch + distro_suffix,
         files = [
-            "mytestfile.txt",
-            "build_python/test.txt"
+            "mytestfile.txt"
         ],
         debs = [
             DISTRO_PACKAGES[arch][distro_suffix]["dash"],

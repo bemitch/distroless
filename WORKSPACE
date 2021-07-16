@@ -321,6 +321,13 @@ container_pull(
     tag = "latest"
 )
 
+container_pull(
+    name = "bmubuntu",
+    registry = "index.docker.io",
+    repository = "ubuntu",
+    tag = "20.04"
+)
+
 
 container_repositories()
 
